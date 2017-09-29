@@ -1,17 +1,18 @@
 ---
 
-- hosts: host_name
-  sudo: yes
+- hosts: sonarqubeTest
+  become: yes
+  become_user: root
   vars:
     package_name: jdk-8u5-linux-x64.tar.gz
     download_url: "http://download.oracle.com/otn-pub/java/jdk/8u5-b13/{{ package_name }}"
     download_dir: /opt
     java_name: "{{ download_dir }}/jdk1.8.0_05"
-    java_archive: "{{ download_dir }}/package_name"
+    java_archive: "{{ download_dir }}/{{ package_name }}"
     
   tasks:
     - name: Download Java
-      command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=acept-securebackup-cookie' {{ downoad_url }} creates={{ java_archive }}"    
+      command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{ download_url }} creates={{ java_archive }}"    
       
     - name: Unpack Archive
       command: "tar -zxf {{ java_archive }} -C {{ download_dir }} creates={{ java_name }}"	  
@@ -22,8 +23,8 @@
     - name: Making java available
       command: 'alternatives --install "/usr/bin/java" "java" "{{ java_name }}/bin/java" 2000'	  
       
-    - name: Cleanup
-      file: state=absent path={{ java_archive }}
+    #- name: Cleanup
+    #  file: state=absent path={{ java_archive }}
       
     - name : Status
       command: "echo Java installation Completed"
