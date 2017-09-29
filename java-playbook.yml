@@ -15,7 +15,7 @@
       command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{ download_url }} creates={{ java_archive }}"    
       
     - name: Unpack Archive
-      command: "tar -zxf {{ java_archive }}/{{ package_name }} -C {{ download_dir }} creates={{ java_name }}"	  
+      command: "tar -zxf {{ java_archive }} -C {{ download_dir }} creates={{ java_name }}"	  
       
     - name: Fix Ownership
       file: state=directory path={{ java_name }} owner=root group=root recurse=yes	  
