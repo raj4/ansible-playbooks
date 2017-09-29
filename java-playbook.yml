@@ -8,20 +8,20 @@
     download_dir: /opt
     java_name: "{{ download_dir }}/jdk1.8.0_05"
     java_archive: "{{ download_dir }}/package_name"
-	
+    
   tasks:
     - name: Download Java
-      command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=acept-securebackup-cookie' {{ downoad_url }} creates={{ java_archive }}"
-	  
+      command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=acept-securebackup-cookie' {{ downoad_url }} creates={{ java_archive }}"    
+      
     - name: Unpack Archive
-      command: "tar -zxf {{ java_archive }} -C {{ download_dir }} creates={{ java_name }}"
-	  
+      command: "tar -zxf {{ java_archive }} -C {{ download_dir }} creates={{ java_name }}"	  
+      
     - name: Fix Ownership
-      file: state=directory path={{ java_name }} owner=root group=root recurse=yes
-	  
+      file: state=directory path={{ java_name }} owner=root group=root recurse=yes	  
+      
     - name: Making java available
-      command: 'alternatives --install "/usr/bin/java" "java" "{{ java_name }}/bin/java" 2000'
-	  
+      command: 'alternatives --install "/usr/bin/java" "java" "{{ java_name }}/bin/java" 2000'	  
+      
     - name: Cleanup
       file: state=absent path={{ java_archive }}
       
