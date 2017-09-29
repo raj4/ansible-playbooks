@@ -23,8 +23,8 @@
     - name: Making java available
       command: 'alternatives --install "/usr/bin/java" "java" "{{ java_name }}/bin/java" 2000'	  
       
-    #- name: Cleanup
-    #  file: state=absent path={{ java_archive }}
+    - name: Cleanup
+      file: state=absent path={{ java_archive }}
       
     - name : Status
       command: "echo Java installation Completed"
