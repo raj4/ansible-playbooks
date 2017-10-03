@@ -7,7 +7,7 @@
     package_name: jdk-8u131-linux-x64.tar.gz
     download_url: "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/{{ package_name }}"
     download_dir: /opt
-    java_name: "{{ download_dir }}/jdk1.8.0_05"
+    java_name: "{{ download_dir }}/jdk1.8.0_131"
     java_archive: "{{ download_dir }}/{{ package_name }}"
     
   tasks:
@@ -21,10 +21,11 @@
       file: state=directory path={{ java_name }} owner=root group=root recurse=yes	  
       
     - name: Making java available
-      command: 'alternatives --install "/usr/bin/java" "java" "{{ java_name }}/bin/java" 2000'	  
+      #command: path="/usr/bin"  "ln -s {{ java_name }}/bin/java java" 	  
+      file: path=/usr/bin/java src="{{ java_name }}/bin/java" state=link force=yes
       
-    - name: Cleanup
-      file: state=absent path={{ java_archive }}
+    #- name: Cleanup
+    #  file: state=absent path={{ java_archive }}
       
     - name : Status
       command: "echo Java installation Completed"
