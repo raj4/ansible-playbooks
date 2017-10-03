@@ -1,0 +1,40 @@
+---
+
+- hosts: sonarqubeTest
+  become: yes
+  become_user: root
+  vars:
+    download_path: "/opt"
+    download_url: "https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm"
+    new_mysql_root_pass: "@Mysqldbroot5"
+    dependencies:
+      - epel-release
+ 
+  tasks:
+    - name: Installing dependencies
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ dependencies }}"
+
+    - name: Adding mysql repository
+      get_url:
+        url: "{{ download_url }}"
+        dest: "{{ download_path }}"
+        validate_certs: no
+
+    - name: Installing mysql repository
+      yum: 
+        name: /opt/mysql57-community-release-el7-11.noarch.rpm
+        state: present
+
+    - name: Install mysql server
+      yum:
+        name: mysql-server
+        state: present
+    
+    - name: Starting mysql service
+      service:
+        name: mysqld
+        state: started
+        enabled: yes
