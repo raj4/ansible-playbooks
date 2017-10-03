@@ -11,5 +11,18 @@
     java_archive: "{{ download_dir }}/{{ package_name }}"
 
   tasks:
-    - name: Download nginx
+    - name: Add Nginx repository
+      yum:
+        name: epel-release
+        state: latest
+        
     - name: Install nginx
+      yum:
+        name: nginx
+        state: latest
+        
+    - name: Starting nginx service
+      service:
+        name: nginx
+        state: started
+        enabled: yes
