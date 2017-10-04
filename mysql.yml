@@ -6,9 +6,12 @@
   vars:
     download_path: "/opt"
     download_url: "https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm"
-    new_mysql_root_pass: "@Mysqldbroot5"
+    mysql_root_password: "@Mysqldbroot5"
+    ansible_hostname: sonarqubeTest
     dependencies:
       - epel-release
+      - python-pip
+      - MySQL-python
  
   tasks:
     - name: Installing dependencies
@@ -16,6 +19,14 @@
         name: "{{ item }}"
         state: latest
       with_items: "{{ dependencies }}"
+
+    - name: updating pip
+      command: 'pip install --upgrade pip'
+
+    - name: Create the flask database
+      mysql_db:
+        name: flask_db
+        state: present
 
     - name: Adding mysql repository
       get_url:
@@ -38,3 +49,5 @@
         name: mysqld
         state: started
         enabled: yes
+
+    - include: mysql_secure_installation.yml

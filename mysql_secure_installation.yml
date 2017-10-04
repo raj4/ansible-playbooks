@@ -1,5 +1,10 @@
+---
+
 - name: delete anonymous MySQL server user for {{ ansible_hostname }}
-  action: mysql_user user="" host="{{ ansible_hostname }}" state="absent"
+  mysql_user: 
+    user: ""
+    host: "{{ ansible_hostname }}"
+    state: "absent"
 
 - name: delete anonymous MySQL server user for localhost
   action: mysql_user user="" state="absent"
@@ -8,14 +13,21 @@
   action: mysql_db db=test state=absent
      
 - name: Change root user password on first run
-  mysql_user: login_user=root
-              login_password=''
-              name=root
-              password={{ mysql_root_password }}
-              priv=*.*:ALL,GRANT
-              host={{ item }}
+  mysql_user: 
+    login_user: root
+    login_password: ''
+    name: root
+    password: "{{ mysql_root_password }}"
+    priv: '*.*:ALL,GRANT'
+    host: "{{ item }}"
   with_items:
     - "{{ ansible_hostname }}"
     - 127.0.0.1
     - ::1
     - localhost
+
+- name: Starting mysql service
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
