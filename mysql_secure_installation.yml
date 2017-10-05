@@ -1,21 +1,10 @@
 ---
+- shell: 'echo {{ temporary_password.stdout }}'
 
-- name: delete anonymous MySQL server user for {{ ansible_hostname }}
-  mysql_user: 
-    user: ""
-    host: "{{ ansible_hostname }}"
-    state: "absent"
-
-- name: delete anonymous MySQL server user for localhost
-  action: mysql_user user="" state="absent"
-
-- name: remove the MySQL test database
-  action: mysql_db db=test state=absent
-     
 - name: Change root user password on first run
   mysql_user: 
     login_user: root
-    login_password: ''
+    login_password: "{{ temporary_password.stdout }}"
     name: root
     password: "{{ mysql_root_password }}"
     priv: '*.*:ALL,GRANT'
@@ -25,6 +14,18 @@
     - 127.0.0.1
     - ::1
     - localhost
+
+- name: delete anonymous MySQL server user for {{ ansible_hostname }}
+  mysql_user:
+    user: ""
+    host: "{{ ansible_hostname }}"
+    state: "absent"
+
+- name: delete anonymous MySQL server user for localhost
+  action: mysql_user user="" state="absent"
+
+- name: remove the MySQL test database
+  action: mysql_db db=test state=absent
 
 - name: Starting mysql service
   service:

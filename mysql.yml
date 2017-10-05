@@ -5,11 +5,11 @@
   become_user: root
   vars:
     download_path: "/opt"
-    download_url: "https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm"
+    download_file: "mysql57-community-release-el7-11.noarch.rpm"
+    download_url: "https://dev.mysql.com/get/{{ download_file }}"
     mysql_root_password: "@Mysqldbroot5"
     ansible_hostname: sonarqubeTest
     dependencies:
-      - epel-release
       - python-pip
       - MySQL-python
  
@@ -20,13 +20,19 @@
         state: latest
       with_items: "{{ dependencies }}"
 
+    - name: Installing pexpect module
+      pip:
+        name: pexpect
+        version: 3.3
+
+    - name: Add repository
+      expect:
+        command: 'yum install epel-release'
+        responses:
+          (?i)[y/d/N]: "y"
+
     - name: updating pip
       command: 'pip install --upgrade pip'
-
-    - name: Create the flask database
-      mysql_db:
-        name: flask_db
-        state: present
 
     - name: Adding mysql repository
       get_url:
@@ -36,7 +42,7 @@
 
     - name: Installing mysql repository
       yum: 
-        name: /opt/mysql57-community-release-el7-11.noarch.rpm
+        name: /opt/{{ download_file }}
         state: present
 
     - name: Install mysql server
@@ -49,5 +55,9 @@
         name: mysqld
         state: started
         enabled: yes
+
+    - name: Getting temporary password
+      command: "sed -n -e 's/^.*localhost: //p' /var/log/mysqld.log"
+      register: temporary_password
 
     - include: mysql_secure_installation.yml
