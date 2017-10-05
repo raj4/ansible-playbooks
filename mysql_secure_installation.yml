@@ -1,12 +1,3 @@
-<<<<<<< HEAD
----
-- shell: 'echo {{ temporary_password.stdout }}'
-
-- name: Change root user password on first run
-  mysql_user: 
-    login_user: root
-    login_password: "{{ temporary_password.stdout }}"
-=======
 ---   
 - name: ensure mysql is running and starts on boot
   service:
@@ -29,7 +20,6 @@
 
 - name: update mysql root password for all root accounts
   mysql_user:
->>>>>>> 7261f11285c1ed604599a362a716dd2d85c89162
     name: root
     host: {{ item }}
     password: "{{ mysql_root_password }}"
@@ -47,27 +37,7 @@
     - localhost
     - {{ inventory_hostname }}
 
-<<<<<<< HEAD
-- name: delete anonymous MySQL server user for {{ ansible_hostname }}
-  mysql_user:
-    user: ""
-    host: "{{ ansible_hostname }}"
-    state: "absent"
-
-- name: delete anonymous MySQL server user for localhost
-  action: mysql_user user="" state="absent"
-
-- name: remove the MySQL test database
-  action: mysql_db db=test state=absent
-
-- name: Starting mysql service
-  service:
-    name: mysqld
-    state: started
-    enabled: yes
-=======
 - name: remove the test database
   mysql_db:
     name: test
     state: absent
->>>>>>> 7261f11285c1ed604599a362a716dd2d85c89162
