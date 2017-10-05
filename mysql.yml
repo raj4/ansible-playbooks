@@ -9,6 +9,7 @@
     download_url: "https://dev.mysql.com/get/{{ download_file }}"
     mysql_root_password: "@Mysqldbroot5"
     ansible_hostname: sonarqubeTest
+    inventory_hostname: ansible
     dependencies:
       - python-pip
       - MySQL-python

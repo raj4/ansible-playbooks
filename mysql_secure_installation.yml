@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 - shell: 'echo {{ temporary_password.stdout }}'
 
@@ -5,16 +6,48 @@
   mysql_user: 
     login_user: root
     login_password: "{{ temporary_password.stdout }}"
+=======
+---   
+- name: ensure mysql is running and starts on boot
+  service:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: update mysql root password for all root accounts
+  mysql_user:
     name: root
+    host: localhost
     password: "{{ mysql_root_password }}"
-    priv: '*.*:ALL,GRANT'
-    host: "{{ item }}"
+
+- name: copy .my.cnf file with root password credentials
+  template:
+    src: templates/root/.my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    mode: 0600
+
+- name: update mysql root password for all root accounts
+  mysql_user:
+>>>>>>> 7261f11285c1ed604599a362a716dd2d85c89162
+    name: root
+    host: {{ item }}
+    password: "{{ mysql_root_password }}"
   with_items:
     - "{{ ansible_hostname }}"
     - 127.0.0.1
     - ::1
-    - localhost
 
+- name: ensure anonymous users are not in the database
+  mysql_user:
+    name: ''
+    host: {{ item }}
+    state: absent
+  with_items:
+    - localhost
+    - {{ inventory_hostname }}
+
+<<<<<<< HEAD
 - name: delete anonymous MySQL server user for {{ ansible_hostname }}
   mysql_user:
     user: ""
@@ -32,3 +65,9 @@
     name: mysqld
     state: started
     enabled: yes
+=======
+- name: remove the test database
+  mysql_db:
+    name: test
+    state: absent
+>>>>>>> 7261f11285c1ed604599a362a716dd2d85c89162
