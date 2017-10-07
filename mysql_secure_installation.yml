@@ -7,6 +7,7 @@
 
 - name: update mysql root password for all root accounts
   mysql_user:
+    login_password: ""
     name: root
     host: localhost
     password: "{{ mysql_root_password }}"
@@ -21,7 +22,7 @@
 - name: update mysql root password for all root accounts
   mysql_user:
     name: root
-    host: {{ item }}
+    host: "{{ item }}"
     password: "{{ mysql_root_password }}"
   with_items:
     - "{{ ansible_hostname }}"
@@ -31,11 +32,11 @@
 - name: ensure anonymous users are not in the database
   mysql_user:
     name: ''
-    host: {{ item }}
+    host: "{{ item }}"
     state: absent
   with_items:
     - localhost
-    - {{ inventory_hostname }}
+    - "{{ inventory_hostname }}"
 
 - name: remove the test database
   mysql_db:

@@ -60,5 +60,22 @@
     - name: Getting temporary password
       command: "sed -n -e 's/^.*localhost: //p' /var/log/mysqld.log"
       register: temporary_password
+      tags: secure_installation
 
-    - include: mysql_secure_installation.yml
+    - name: Secure Installation
+      expect:
+        command: 'mysql_secure_installation'
+        responses:
+          'Enter password for user root:': "{{ temporary_password.stdout }}\n"
+          'New password:': "{{ mysql_root_password }}\n"
+          'Re-enter new password:': "{{ mysql_root_password }}\n"
+          'Change the password for root ? \(Press y|Y for Yes, any other key for No\) :': "n\n"
+          'Remove anonymous users? \(Press y|Y for Yes, any other key for No\) :': "y\n"
+          'Disallow root login remotely? \(Press y|Y for Yes, any other key for No\) :': "y\n"
+          'Remove test database and access to it? \(Press y|Y for Yes, any other key for No\) :': "y\n"
+          'Reload privilege tables now? \(Press y|Y for Yes, any other key for No\) :': "y\n"
+        echo: yes
+      tags: secure_installation
+
+
+    #- include: mysql_secure_installation.yml
