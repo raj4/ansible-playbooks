@@ -10,6 +10,8 @@
     mysql_root_password: "@Mysqldbroot5"
     ansible_hostname: sonarqubeTest
     inventory_hostname: ansible
+    sonarqube_user: sonarqube
+    sonarqube_pass: "@Sonaruser123"
     dependencies:
       - python-pip
       - MySQL-python
@@ -78,4 +80,11 @@
       tags: secure_installation
 
 
-    #- include: mysql_secure_installation.yml
+    - name: Adding a sonarqube user
+      mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        user: "{{ sonarqube_user }}"
+        password: "{{ sonarqube_pass }}"
+        priv: '*.*:ALL'
+        state: present 

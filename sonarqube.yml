@@ -1,0 +1,112 @@
+---
+
+- hosts: sonarqubeTest
+  become: yes
+  become_user: root
+  vars:
+    download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
+    file_name: 'sonarqube-6.5'
+    destionation_dir: '/opt/'
+    sonarqube_filename: sonarqube
+    sonarqube_tar: "{{ destionation_dir }}{{ file_name }}.zip"
+    sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
+    sonarqube_user: sonarqube
+    sonarqube_pass: "@Sonaruser123"
+    sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
+    sonar_file: '/etc/ansible/playbooks/master/sonar'
+    etc_sonar_file: '/etc/init.d/sonar'
+    link_path: '/usr/bin/sonar'
+    dependencies:
+      - zip
+      - unzip
+    properties:
+      '(#sonar\.jdbc\.username=)': 'sonar.jdbc.username="{{ sonarqube_user }}"'
+      '(#sonar\.jdbc\.password=)': 'sonar.jdbc.password="{{ sonarqube_pass }}"'
+      '(#sonar\.jdbc\.url=jdbc:mysql:)': 'sonar.jdbc.url=jdbc:mysql:'
+      '(#sonar\.web\.context=)': 'sonar.web.context=/sonar'
+
+  tasks:
+    - name: Installing dependencies
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ dependencies }}"
+
+    - name: Checking sonarqube file, exists or not
+      stat:
+        path: "{{ sonarqube_tar }}"
+      register: bool_file_exist
+
+    - name: Downloading sonarqube version
+      command: 'wget -O {{ destionation_dir }}{{ file_name }}.zip --no-check-certificate {{ download_url }}{{ file_name }}.zip'
+      when: bool_file_exist.stat.exists == False
+
+    #- name: Creating sonarqube directory
+      #file:
+        #path: "{{ destionation_dir }}{{ sonarqube_filename }}"
+        #state: directory
+
+    - name: Checking sonarqube file, exists or not
+      stat:
+        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
+      register: bool_dir_exist
+
+    - name: Untar sonarqube
+      unarchive:
+        src: "{{ sonarqube_tar }}"
+        dest: "{{ destionation_dir }}"
+        remote_src: yes
+      when: bool_file_exist.stat.exists == True and bool_file_exist.stat.exists == False
+
+    - name: Checking sonarqube file, exists or not
+      stat:
+        path: "{{ destionation_dir }}{{ file_name }}"
+      register: bool_dir_exist
+
+    - name: Move folder sonar
+      #Cannot use copy module as it does not support recursive copy when remote_src=yes.
+      #copy:
+        #src: "{{ destionation_dir }}{{ file_name }}/"
+        #dest: "{{ destionation_dir }}{{ sonarqube_filename }}/"
+        #remote_src: yes
+      command: 'mv {{ destionation_dir }}{{ file_name }}/ {{ destionation_dir }}{{ sonarqube_filename }}/'
+      when: bool_dir_exist.stat.exists == True
+
+    - name: Removing sonarqube old dir
+      file:
+        path: "{{ destionation_dir }}{{ file_name }}"
+        state: absent
+
+    - name: Change default properties of sonar
+      replace:
+        path: "{{ sonarqube_conf }}"
+        regexp: "{{ item.key }}"
+        replace: "{{ item.value }}"
+        backup: yes
+      with_dict: "{{ properties }}"
+      tags: ignore
+
+    - name: Copying sonar file to remote location
+      copy:
+        src: "{{ sonar_file }}"
+        dest: '/etc/init.d/'
+
+    - name: Creating softlink for sonarqube
+      file:
+        src: "{{ sonar_properties }}"
+        dest: "{{ link_path }}"
+        state: link
+
+    - name: Changing sonar file mode
+      file:
+        path: "{{ etc_sonar_file }}"
+        mode: 755
+
+    - name: Adding sonar to the boot
+      command: 'chkconfig --add sonar'
+
+    - name: Starting Sonar service
+      service:
+        name: sonar
+        state: restarted
+        enabled: yes
