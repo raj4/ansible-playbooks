@@ -1,0 +1,37 @@
+---
+
+- host: localhost
+  become: true
+  vars:
+    - dependencies:
+	    curl
+		policycoreutils-python
+		openssh-server 
+		cronie
+  tasks:
+    - name: Install Dependencies
+	- yum:
+	    name: {{ item }}
+		state: present
+		with_items: {{ dependencies }}
+		
+    - name: Open connection
+	  shell: 'lokkit -s http -s ssh'
+	  
+	- name: Install Postfix
+	  yum :
+	    name: postfix
+		state: present
+		
+	- name: Start postfix service
+	  service:
+	    name: postfix
+		state: started
+		enabled: true
+		
+	- name: Adding git lab repo
+	  shell: 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.rpm.sh | sudo bash'
+	  
+	- name: Install gitlab package
+	  shell: 
+	  'sudo EXTERNAL_URL="http://gitlab.example.com" yum -y install gitlab-ee'
