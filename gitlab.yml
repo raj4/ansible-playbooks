@@ -3,11 +3,11 @@
 - host: localhost
   become: true
   vars:
-    - dependencies:
-      curl
-      policycoreutils-python
-      openssh-server 
-      cronie
+    dependencies:
+      - curl
+      - policycoreutils-python
+      - openssh-server 
+      - cronie
   tasks:
     - name: Install Dependencies
     - yum:
