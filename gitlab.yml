@@ -1,6 +1,6 @@
 ---
 
-- host: localhost
+- hosts: gitlab
   become: true
   vars:
     dependencies:
@@ -9,19 +9,38 @@
       - openssh-server 
       - cronie
   tasks:
-    - name: Install Dependencies
-    - yum:
-        name: {{ item }}
-        state: present
-        with_items: {{ dependencies }}
 
-    - name: Open connection
-      shell: 'lokkit -s http -s ssh'
+    - name: Install Dependencies
+      yum:
+        name: "{{ item }}"
+        state: latest
+      with_items: "{{ dependencies }}"
+
+    - name: Enable systemctl service
+      service:
+        name: sshd
+        state: started
+        enabled: true
+
+    - name: Enable firewall service
+      service:
+        name: firewalld
+        state: started
+        enabled: true
+
+    - name: Enable firewall
+      shell: 'firewall-cmd --permanent --add-service=http'
+
+    - name: Reload Firewall
+      service:
+        name: firewalld
+        state: reloaded
+        enabled: true
 
     - name: Install Postfix
       yum :
         name: postfix
-        state: present
+        state: latest
 
     - name: Start postfix service
       service:
@@ -33,4 +52,4 @@
       shell: 'curl https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.rpm.sh | sudo bash'
 
     - name: Install gitlab package
-        shell: 'sudo EXTERNAL_URL="http://gitlab.example.com" yum -y install gitlab-ee'
+      shell: 'sudo EXTERNAL_URL="http://gitlab.rajTest.com" yum -y install gitlab-ee'
