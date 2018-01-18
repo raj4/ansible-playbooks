@@ -1,11 +1,11 @@
 ---
 
-- hosts: sonarqubeTest
+- hosts: localhost
   become: yes
   become_user: root
   vars:
     download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
-    file_name: 'sonarqube-6.5'
+    file_name: 'sonarqube-6.7.1'
     destionation_dir: '/opt/'
     sonarqube_filename: sonarqube
     sonarqube_tar: "{{ destionation_dir }}{{ file_name }}.zip"
@@ -13,7 +13,7 @@
     sonarqube_user: sonarqube
     sonarqube_pass: "@Sonaruser123"
     sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
-    sonar_file: '/etc/ansible/playbooks/master/sonar'
+    sonar_file: '/etc/ansible/ansible-playbooks/sonar'
     etc_sonar_file: '/etc/init.d/sonar'
     link_path: '/usr/bin/sonar'
     dependencies:
@@ -56,7 +56,7 @@
         src: "{{ sonarqube_tar }}"
         dest: "{{ destionation_dir }}"
         remote_src: yes
-      when: bool_file_exist.stat.exists == True and bool_file_exist.stat.exists == False
+      when: bool_file_exist.stat.exists == True
 
     - name: Checking sonarqube file, exists or not
       stat:
@@ -77,14 +77,14 @@
         path: "{{ destionation_dir }}{{ file_name }}"
         state: absent
 
-    - name: Change default properties of sonar
-      replace:
-        path: "{{ sonarqube_conf }}"
-        regexp: "{{ item.key }}"
-        replace: "{{ item.value }}"
-        backup: yes
-      with_dict: "{{ properties }}"
-      tags: ignore
+#    - name: Change default properties of sonar
+#      replace:
+#        path: "{{ sonarqube_conf }}"
+#        regexp: "{{ item.key }}"
+#        replace: "{{ item.value }}"
+#        backup: yes
+#      with_dict: "{{ properties }}"
+#      tags: ignore
 
     - name: Copying sonar file to remote location
       copy:

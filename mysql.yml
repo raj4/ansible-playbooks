@@ -5,13 +5,13 @@
   become_user: root
   vars:
     download_path: "/opt"
-    download_file: "mysql57-community-release-el7-11.noarch.rpm"
-    download_url: "https://dev.mysql.com/get/{{ download_file }}"
+    download_file: "mysql-community-release-el7-5.noarch.rpm"
+    download_url: "http://repo.mysql.com/{{ download_file }}"
     mysql_root_password: "@Mysqldbroot5"
     ansible_hostname: sonarqubeTest
     inventory_hostname: ansible
-    sonarqube_user: sonarqube
-    sonarqube_pass: "@Sonaruser123"
+    sonarqube_user: sonar
+    sonarqube_pass: "sonar"
     dependencies:
       - python-pip
       - MySQL-python
@@ -48,6 +48,9 @@
         name: /opt/{{ download_file }}
         state: present
 
+    - name: Updating system
+      command: 'yum update -y' 
+
     - name: Install mysql server
       yum:
         name: mysql-server
@@ -59,23 +62,16 @@
         state: started
         enabled: yes
 
-    - name: Getting temporary password
-      command: "sed -n -e 's/^.*localhost: //p' /var/log/mysqld.log"
-      register: temporary_password
-      tags: secure_installation
-
     - name: Secure Installation
       expect:
         command: 'mysql_secure_installation'
         responses:
-          'Enter password for user root:': "{{ temporary_password.stdout }}\n"
-          'New password:': "{{ mysql_root_password }}\n"
-          'Re-enter new password:': "{{ mysql_root_password }}\n"
-          'Change the password for root ? \(Press y|Y for Yes, any other key for No\) :': "n\n"
-          'Remove anonymous users? \(Press y|Y for Yes, any other key for No\) :': "y\n"
-          'Disallow root login remotely? \(Press y|Y for Yes, any other key for No\) :': "y\n"
-          'Remove test database and access to it? \(Press y|Y for Yes, any other key for No\) :': "y\n"
-          'Reload privilege tables now? \(Press y|Y for Yes, any other key for No\) :': "y\n"
+          'Enter current password for root \(enter for none\):': "\n"
+          'Set root password? [Y/n] ': "n\n"
+          'Remove anonymous users? [Y/n] ': "Y\n"
+          'Disallow root login remotely? [Y/n] ': "Y\n"
+          'Remove test database and access to it? [Y/n] ': "Y\n"
+          'Reload privilege tables now? [Y/n] ': "Y\n"
         echo: yes
       tags: secure_installation
 
@@ -83,8 +79,15 @@
     - name: Adding a sonarqube user
       mysql_user:
         login_user: root
-        login_password: "{{ mysql_root_password }}"
+        login_password: ""
         user: "{{ sonarqube_user }}"
         password: "{{ sonarqube_pass }}"
         priv: '*.*:ALL'
         state: present 
+
+    - name: Create a new database with name 'sonar'
+      mysql_db:
+        login_user: root
+        login_password: ""
+        name: sonar
+        state: present
