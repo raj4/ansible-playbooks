@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  become: yes
+  become_user: root
+  tasks:
+    - include: java-playbook.yml
+    - include: nginx1.yml
+    - include: mysql.yml
+    - include: sonarqube.yml

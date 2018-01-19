@@ -1,10 +1,10 @@
 ---
 
-- hosts: localhost
-  become: yes
-  become_user: root
+#- hosts: localhost
+#  become: yes
+#  become_user: root
   
-  tasks:
+#  tasks:
     - name: Add Nginx repository
       yum:
         name: epel-release

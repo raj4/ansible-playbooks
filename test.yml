@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  become: yes
+  vars:
+    sonar_file: 'sonar'
+    etc_sonar_file: '/etc/init.d/sonar'
+  tasks:
+    - name: Copying sonar file to remote location
+      copy:
+        src: "{{ sonar_file }}"
+        dest: '/etc/init.d/'
