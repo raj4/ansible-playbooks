@@ -1,16 +1,4 @@
 ---
-
-- hosts: localhost
-  become: yes
-  become_user: root
-  vars:
-    package_name: jdk-8u131-linux-x64.tar.gz
-    download_url: "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/{{ package_name }}"
-    download_dir: /opt
-    java_name: "{{ download_dir }}/jdk1.8.0_131"
-    java_archive: "{{ download_dir }}/{{ package_name }}"
-    
-  tasks:
     - name: Download Java
       command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{ download_url }} creates={{ java_archive }}"    
       
@@ -19,7 +7,7 @@
       
     - name: Fix Ownership
       file:
-        state=directory
+        state: directory
         path: "{{ java_name }}"
         owner: root
         group: root
@@ -30,7 +18,7 @@
         path: "/usr/bin/java"
         src: "{{ java_name }}/bin/java"
         state: link
-        force=yes
+        force: yes
       
     - name: Removing java setup file
       file: 

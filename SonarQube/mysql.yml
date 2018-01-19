@@ -1,19 +1,4 @@
 ---
-
-- hosts: localhost
-  become: yes
-  become_user: root
-  vars:
-    download_path: "/opt"
-    download_file: "mysql-community-release-el7-5.noarch.rpm"
-    download_url: "http://repo.mysql.com/{{ download_file }}"
-    sonarqube_user: sonar
-    sonarqube_pass: "sonar"
-    dependencies:
-      - python-pip
-      - MySQL-python
- 
-  tasks:
     - name: Installing dependencies
       yum:
         name: "{{ item }}"

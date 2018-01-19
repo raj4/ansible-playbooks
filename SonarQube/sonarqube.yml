@@ -1,23 +1,4 @@
 ---
-- hosts: localhost
-  become: yes
-  become_user: root
-  vars:
-    download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
-    file_name: 'sonarqube-6.7.1'
-    destionation_dir: '/opt/'
-    sonarqube_filename: sonarqube
-    sonarqube_tar: "{{ destionation_dir }}{{ file_name }}.zip"
-    sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
-    sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
-    sonar_file: '/etc/ansible/ansible-playbooks/sonar'
-    etc_sonar_file: '/etc/init.d/sonar'
-    link_path: '/usr/bin/sonar'
-    dependencies:
-      - zip
-      - unzip
-
-  tasks:
     - name: Installing dependencies
       yum:
         name: "{{ item }}"
@@ -42,6 +23,11 @@
       stat:
         path: "{{ destionation_dir }}{{ sonarqube_filename }}"
       register: bool_dir_exist
+
+    - name: Checking sonarqube file, exists or not
+      stat:
+        path: "{{ sonarqube_tar }}"
+      register: bool_file_exist
 
     - name: Untar sonarqube
       unarchive:
@@ -87,6 +73,13 @@
 
     - name: Adding sonar to the boot
       command: 'chkconfig --add sonar'
+
+    - name: Changing ownership of sonar home folder
+      file:
+        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
+        owner: "{{ sonarqube_user }}"
+        group: "{{ sonarqube_group }}"
+        recurse: yes
 
     - name: Starting Sonar service
       service:
