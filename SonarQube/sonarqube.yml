@@ -11,18 +11,8 @@
       register: bool_file_exist
 
     - name: Downloading sonarqube version
-      command: 'wget -O {{ destionation_dir }}{{ file_name }}.zip --no-check-certificate {{ download_url }}{{ file_name }}.zip'
+      command: 'wget -O {{ destionation_dir }}{{ sonar_file_name }}.zip --no-check-certificate {{ sonar_download_url }}{{ sonar_file_name }}.zip'
       when: bool_file_exist.stat.exists == False
-
-    #- name: Creating sonarqube directory
-      #file:
-        #path: "{{ destionation_dir }}{{ sonarqube_filename }}"
-        #state: directory
-
-    - name: Checking sonarqube file, exists or not
-      stat:
-        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
-      register: bool_dir_exist
 
     - name: Checking sonarqube file, exists or not
       stat:
@@ -36,24 +26,40 @@
         remote_src: yes
       when: bool_file_exist.stat.exists == True
 
-    - name: Checking sonarqube file, exists or not
+    - name: Checking sonarqube untared dir, exists or not
       stat:
-        path: "{{ destionation_dir }}{{ file_name }}"
+        path: "{{ destionation_dir }}{{ sonar_file_name }}"
       register: bool_dir_exist
 
     - name: Move folder sonar
       #Cannot use copy module as it does not support recursive copy when remote_src=yes.
-      #copy:
-        #src: "{{ destionation_dir }}{{ file_name }}/"
-        #dest: "{{ destionation_dir }}{{ sonarqube_filename }}/"
-        #remote_src: yes
-      command: 'mv {{ destionation_dir }}{{ file_name }}/ {{ destionation_dir }}{{ sonarqube_filename }}/'
+      command: 'mv {{ destionation_dir }}{{ sonar_file_name }}/ {{ destionation_dir }}{{ sonarqube_filename }}/'
       when: bool_dir_exist.stat.exists == True
 
     - name: Removing sonarqube old dir
       file:
-        path: "{{ destionation_dir }}{{ file_name }}"
+        path: "{{ destionation_dir }}{{ sonar_file_name }}"
         state: absent
+
+    - name: Creating group sonar
+      command: 'groupadd {{ sonarqube_group }}'
+
+    - name: Creating user sonar
+      command: 'useradd -c "Sonar System User" -d {{ destionation_dir }}{{ sonarqube_filename }}  -g {{ sonarqube_group }} -s /bin/bash {{ sonarqube_user }}'  
+
+    - name: Changing ownership of sonar home folder
+      file:
+        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
+        owner: "{{ sonarqube_user }}"
+        group: "{{ sonarqube_group }}"
+        recurse: yes
+
+    - name: Editing sonar.sh properties
+      replace:
+        path: "{{ sonar_properties }}"
+        regexp: '#RUN_AS_USER='
+        replace: 'RUN_AS_USER=sonar'
+        backup: yes
 
     - name: Copying sonar file to remote location
       copy:
@@ -67,25 +73,15 @@
         state: link
 
     - name: Changing sonar file mode
-      file:
-        path: "{{ etc_sonar_file }}"
-        mode: 755
+      command: 'chmod 755 {{ etc_sonar_file }}'
 
     - name: Adding sonar to the boot
       command: 'chkconfig --add sonar'
 
-    - name: Changing ownership of sonar home folder
-      file:
-        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
-        owner: "{{ sonarqube_user }}"
-        group: "{{ sonarqube_group }}"
-        recurse: yes
-
     - name: Starting Sonar service
-      service:
-        name: sonar
-        state: restarted
-        enabled: yes
+      command: '/etc/init.d/sonar start'
+      become: yes
+      become_user: "{{ sonarqube_user }}"
 
     - name: Removing sonar setup file
       file:

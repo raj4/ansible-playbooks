@@ -4,22 +4,21 @@
   become_user: root
 
   vars:
-      package_name: jdk-8u131-linux-x64.tar.gz
-      download_url: "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/{{ package_name }}"
+      package_name: jdk-8u161-linux-x64.tar.gz
+      java_download_url: "http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/{{ package_name }}"
       download_dir: /opt
-      java_name: "{{ download_dir }}/jdk1.8.0_131"
+      java_name: "{{ download_dir }}/jdk1.8.0_161"
       java_archive: "{{ download_dir }}/{{ package_name }}"
-      download_path: "/opt"
-      download_file: "mysql-community-release-el7-5.noarch.rpm"
-      download_url: "http://repo.mysql.com/{{ download_file }}"
+      mysql_download_file: "mysql-community-release-el7-5.noarch.rpm"
+      mysql_download_url: "http://repo.mysql.com/{{ mysql_download_file }}"
       sonarqube_user: sonar
       sonarqube_group: sonar
       sonarqube_pass: "sonar"   
-      download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
-      file_name: 'sonarqube-6.7.1'
+      sonar_download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
+      sonar_file_name: 'sonarqube-6.7.1'
       destionation_dir: '/opt/'
       sonarqube_filename: sonarqube
-      sonarqube_tar: "{{ destionation_dir }}{{ file_name }}.zip"
+      sonarqube_tar: "{{ destionation_dir }}{{ sonar_file_name }}.zip"
       sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
       sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
       sonar_file: '/etc/ansible/ansible-playbooks/sonar'
@@ -32,7 +31,7 @@
         - MySQL-python
 
   tasks:
-    - include: java-playbook.yml
-    - include: nginx.yml
-    - include: mysql.yml
+    #- include: java-playbook.yml
+    #- include: nginx.yml
+    #- include: mysql.yml
     - include: sonarqube.yml
