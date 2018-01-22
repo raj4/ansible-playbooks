@@ -24,7 +24,7 @@
   sonarqube_tar: "{{ destionation_dir }}{{ sonar_file_name }}.zip"
   sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
   sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
-  sonar_file: '/etc/ansible/roles/SonarQube/files/sonar'
+  sonar_file: 'sonarqube/files/sonar'
   etc_sonar_file: '/etc/init.d/sonar'
   link_path: '/usr/bin/sonar'
 
