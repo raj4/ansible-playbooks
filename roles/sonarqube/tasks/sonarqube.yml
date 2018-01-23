@@ -58,8 +58,14 @@
       replace:
         path: "{{ sonar_properties }}"
         regexp: '#RUN_AS_USER='
-        replace: 'RUN_AS_USER=sonar'
-        backup: yes
+        replace: 'RUN_AS_USER="{{ sonarqube_user }}"'
+
+    - name: Setting sonarqube properties
+      replace:
+        path: "{{ sonarqube_conf }}"
+        regexp: "{{ item.regex }}"
+        replace: "{{ item.replace }}"
+      with_items: "{{ db_properties }}"
 
     - name: Copying sonar file to remote location
       copy:

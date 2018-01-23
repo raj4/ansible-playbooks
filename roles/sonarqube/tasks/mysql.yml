@@ -10,11 +10,11 @@
         name: pexpect
         version: 3.3
 
-    - name: Add repository
-      expect:
-        command: 'yum install epel-release'
-        responses:
-          (?i)[y/d/N]: "y"
+#    - name: Add repository
+#      expect:
+#        command: 'yum install epel-release'
+#        responses:
+#          (?i)[y/d/N]: "y"
 
     - name: updating pip
       command: 'pip install --upgrade pip'
@@ -30,8 +30,8 @@
         name: /opt/{{ mysql_download_file }}
         state: present
 
-    - name: Updating system
-      command: 'yum update -y' 
+#    - name: Updating system
+#      command: 'yum update -y' 
 
     - name: Install mysql server
       yum:

@@ -27,6 +27,10 @@
   sonar_file: 'sonarqube/files/sonar'
   etc_sonar_file: '/etc/init.d/sonar'
   link_path: '/usr/bin/sonar'
+  db_properties:
+    - { regex: '#sonar.jdbc.username=', replace: 'sonar.jdbc.username={{ sonarqube_user }}' }
+    - { regex: '#sonar.jdbc.password=', replace: 'sonar.jdbc.password={{ sonarqube_pass }}' }
+    - { regex: '#sonar.jdbc.url=jdbc:mysql:', replace: 'sonar.jdbc.url=jdbc:mysql:' }
 
   # Dependencies
 
