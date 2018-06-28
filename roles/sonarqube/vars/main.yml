@@ -1,10 +1,10 @@
 ---
   # Java
 
-  package_name: jdk-8u161-linux-x64.tar.gz
-  java_download_url: "http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a1fa6e98c45e0808/{{ package_name }}"
+  package_name: jdk-8u171-linux-x64.tar.gz
+  java_download_url: "http://download.oracle.com/otn-pub/java/jdk/8u171-b11/512cd62ec5174c3487ac17c61aaa89e8/{{ package_name }}"
   download_dir: /opt
-  java_name: "{{ download_dir }}/jdk1.8.0_161"
+  java_name: "{{ download_dir }}/jdk1.8.0_171"
   java_archive: "{{ download_dir }}/{{ package_name }}"
 
   # MySQL
@@ -18,7 +18,7 @@
   sonarqube_group: sonar
   sonarqube_pass: "sonar"
   sonar_download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
-  sonar_file_name: 'sonarqube-6.7.1'
+  sonar_file_name: 'sonarqube-6.7.4'
   destionation_dir: '/opt/'
   sonarqube_filename: sonarqube
   sonarqube_tar: "{{ destionation_dir }}{{ sonar_file_name }}.zip"
@@ -30,7 +30,8 @@
   db_properties:
     - { regex: '#sonar.jdbc.username=', replace: 'sonar.jdbc.username={{ sonarqube_user }}' }
     - { regex: '#sonar.jdbc.password=', replace: 'sonar.jdbc.password={{ sonarqube_pass }}' }
-    - { regex: '#sonar.jdbc.url=jdbc:mysql:', replace: 'sonar.jdbc.url=jdbc:mysql:' }
+    #- { regex: '#sonar.jdbc.url=jdbc:mysql:', replace: 'sonar.jdbc.url=jdbc:mysql:' }
+    - { regex: '#sonar.jdbc.url=jdbc:postgresql:', replace: 'sonar.jdbc.url=jdbc:postgresql:' }
 
   # Dependencies
 
@@ -38,5 +39,8 @@
     - zip
     - unzip
     - python-pip
-    - MySQL-python
+    #- MySQL-python
 
+  postgresql_packages:
+    - postgresql-10
+    #- postgresql-contrib

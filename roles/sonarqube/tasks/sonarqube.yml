@@ -1,6 +1,6 @@
 ---
     - name: Installing dependencies
-      yum:
+      apt:
         name: "{{ item }}"
         state: present
       with_items: "{{ dependencies }}"
