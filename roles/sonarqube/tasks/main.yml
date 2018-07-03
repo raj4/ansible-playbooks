@@ -1,6 +1,6 @@
 ---
 
-- import_tasks: java.yml
-- import_tasks: apache.yml
-- import_tasks: postgresql.yml
-- import_tasks: sonarqube.yml
+- include: java.yml
+- include: apache.yml
+- include: postgresql.yml
+- include: sonarqube.yml

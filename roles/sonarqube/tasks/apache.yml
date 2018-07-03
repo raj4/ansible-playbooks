@@ -1,6 +1,7 @@
 ---
     - name: Updating system
       apt:
+        upgrade: 'yes'
         update_cache: yes
         
     - name: Install apache

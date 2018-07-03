@@ -1,10 +1,4 @@
 ---
-    - name: Installing dependencies
-      apt:
-        name: "{{ item }}"
-        state: present
-      with_items: "{{ dependencies }}"
-
     - name: Checking sonarqube file, exists or not
       stat:
         path: "{{ sonarqube_tar }}"
@@ -56,13 +50,13 @@
 
     - name: Editing sonar.sh properties
       replace:
-        path: "{{ sonar_properties }}"
+        dest: "{{ sonar_sh_file }}"
         regexp: '#RUN_AS_USER='
         replace: 'RUN_AS_USER="{{ sonarqube_user }}"'
 
     - name: Setting sonarqube properties
       replace:
-        path: "{{ sonarqube_conf }}"
+        dest: "{{ sonarqube_conf }}"
         regexp: "{{ item.regex }}"
         replace: "{{ item.replace }}"
       with_items: "{{ db_properties }}"
@@ -74,7 +68,7 @@
 
     - name: Creating softlink for sonarqube
       file:
-        src: "{{ sonar_properties }}"
+        src: "{{ sonar_sh_file }}"
         dest: "{{ link_path }}"
         state: link
 
@@ -82,7 +76,7 @@
       command: 'chmod 755 {{ etc_sonar_file }}'
 
     - name: Adding sonar to the boot
-      command: 'chkconfig --add sonar'
+      command: 'update-rc.d sonar defaults'
 
     - name: Starting Sonar service
       command: '/etc/init.d/sonar start'

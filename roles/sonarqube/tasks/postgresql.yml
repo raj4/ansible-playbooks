@@ -1,19 +1,16 @@
 ---
-    
-    - name: Installing PostgreSQL repository
-      apt_repository:
-        repo: deb http://apt.postgresql.org/pub/repos/apt/ xenial-pgdg main
-        state: present
-    
-    - name: Adding key
-      apt_key:
-        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-        state: present
-
-    - name:
+    - name: Installing dependencies
       apt:
-        update_cache: yes
-    
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ dependencies }}"
+
+    - name: Installing python dependencies
+      pip:
+        name: "{{ item }}"
+        state: present
+      with_items: "{{ pip_packages }}"
+
     - name: Installing PostgreSQL
       apt:
         name: "{{ item }}"
@@ -26,15 +23,14 @@
         enabled: yes
     
     - name: Create sonar user
-      sudo_user: postgres
+      become_user: postgres
       postgresql_user:
         name: "{{ sonarqube_user }}"
         password: "{{ sonarqube_pass }}"
-        priv: '*.*:ALL'
         state: present
     
     - name: Create a new database with name sonar
-      sudo_user: postgres
+      become_user: postgres
       postgresql_db:
         name: sonar
         owner: "{{ sonarqube_user }}"

@@ -1,9 +1,17 @@
 ---
+    - name: Check Java
+      shell: command -v java
+      register: check_java
+      ignore_errors: True
+      changed_when: False
+
     - name: Download Java
       command: "wget -q -O {{ java_archive }} --no-check-certificate --no-cookies --header 'Cookie: oraclelicense=accept-securebackup-cookie' {{ java_download_url }} creates={{ java_archive }}"   
+      when: check_java.rc > 0
       
     - name: Unpack Archive
       command: "tar -zxf {{ java_archive }} -C {{ download_dir }} creates={{ java_name }}"	  
+      when: check_java.rc > 0
       
     - name: Fix Ownership
       file:
@@ -24,3 +32,4 @@
       file: 
         path: "{{ java_archive }}"
         state: absent
+      when: check_java.rc > 0

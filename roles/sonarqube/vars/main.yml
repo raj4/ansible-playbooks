@@ -23,7 +23,7 @@
   sonarqube_filename: sonarqube
   sonarqube_tar: "{{ destionation_dir }}{{ sonar_file_name }}.zip"
   sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
-  sonar_properties: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
+  sonar_sh_file: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
   sonar_file: 'sonarqube/files/sonar'
   etc_sonar_file: '/etc/init.d/sonar'
   link_path: '/usr/bin/sonar'
@@ -39,8 +39,10 @@
     - zip
     - unzip
     - python-pip
-    #- MySQL-python
+
+  pip_packages:
+    - psycopg2
 
   postgresql_packages:
-    - postgresql-10
-    #- postgresql-contrib
+    - postgresql
+    - postgresql-contrib
