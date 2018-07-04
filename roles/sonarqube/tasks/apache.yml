@@ -22,8 +22,6 @@
 
     - name: Enabling virtual host
       shell: "a2ensite {{ full_domain }}.conf"
-      args:
-        creates: "{{ dest_virtualhost_file  }}"
      
     - name: Starting apache/httpd service
       service:
