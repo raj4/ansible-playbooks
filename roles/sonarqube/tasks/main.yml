@@ -1,6 +1,6 @@
 ---
 
-- include: java.yml
+#- include: java.yml
 - include: apache.yml
-- include: postgresql.yml
-- include: sonarqube.yml
+#- include: postgresql.yml
+#- include: sonarqube.yml

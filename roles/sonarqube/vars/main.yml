@@ -7,6 +7,16 @@
   java_name: "{{ download_dir }}/jdk1.8.0_171"
   java_archive: "{{ download_dir }}/{{ package_name }}"
 
+  # apache2
+  http_port: 80
+  https_port: 443
+  domain: 'etouches.com'
+  full_domain: 'sonarcheck.etouches.com'
+  proxy: 'http://localhost:9000/'
+  apache_log_dir: '/var/log/apache2/'
+  virtualhost_file: 'sonarqube/files/virtualhost.conf'
+  dest_virtualhost_file: '/etc/apache2/sites-available/{{ full_domain }}.conf'
+
   # MySQL
 
   mysql_download_file: "mysql-community-release-el7-5.noarch.rpm"

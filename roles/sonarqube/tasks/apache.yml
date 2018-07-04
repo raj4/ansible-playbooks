@@ -9,8 +9,24 @@
         name: apache2
         state: latest
         
+    - name: Enabling mod_proxy
+      shell: a2enmod proxy
+
+    - name: Enabling mod_proxy
+      shell: a2enmod proxy_http
+
+    - name: Creating virtual host file
+      template:
+        src: "{{ virtualhost_file  }}"
+        dest: "{{ dest_virtualhost_file  }}"
+
+    - name: Enabling virtual host
+      shell: "a2ensite {{ full_domain }}.conf"
+      args:
+        creates: "{{ dest_virtualhost_file  }}"
+     
     - name: Starting apache/httpd service
       service:
         name: apache2
         state: started
-        enabled: yes
+        enabled: yes 
