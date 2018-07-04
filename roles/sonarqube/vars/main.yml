@@ -29,10 +29,10 @@
   sonarqube_pass: "sonar"
   sonar_download_url: https://sonarsource.bintray.com/Distribution/sonarqube/
   sonar_file_name: 'sonarqube-6.7.4'
-  destionation_dir: '/opt/'
+  destination_dir: '/opt/'
   sonarqube_filename: sonarqube
-  sonarqube_tar: "{{ destionation_dir }}{{ sonar_file_name }}.zip"
-  sonarqube_conf: "{{ destionation_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
+  sonarqube_tar: "{{ destination_dir }}{{ sonar_file_name }}.zip"
+  sonarqube_conf: "{{ destination_dir }}{{ sonarqube_filename }}/conf/sonar.properties"
   sonar_sh_file: '/opt/sonarqube/bin/linux-x86-64/sonar.sh'
   sonar_file: 'sonarqube/files/sonar'
   etc_sonar_file: '/etc/init.d/sonar'
@@ -42,6 +42,17 @@
     - { regex: '#sonar.jdbc.password=', replace: 'sonar.jdbc.password={{ sonarqube_pass }}' }
     #- { regex: '#sonar.jdbc.url=jdbc:mysql:', replace: 'sonar.jdbc.url=jdbc:mysql:' }
     - { regex: '#sonar.jdbc.url=jdbc:postgresql:', replace: 'sonar.jdbc.url=jdbc:postgresql:' }
+
+  # Sonar-Scanner
+
+  scanner_download_url: "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/"
+  scanner_file_name: "sonar-scanner-cli-3.2.0.1227-linux"
+  scanner_unarchived: "sonar-scanner-3.2.0.1227-linux"
+  scanner_tar: "{{ destination_dir }}{{ scanner_file_name }}.zip"
+  scanner_filename: sonar-scanner
+  scanner_dest_dir: "/opt/{{ sonarqube_filename }}/"
+  scanner_bin: "{{ scanner_dest_dir }}{{ scanner_filename }}/bin"
+  env_file: "/etc/environment"
 
   # Dependencies
 

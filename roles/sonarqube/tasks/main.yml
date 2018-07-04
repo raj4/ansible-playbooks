@@ -4,3 +4,4 @@
 - include: apache.yml
 - include: postgresql.yml
 - include: sonarqube.yml
+- include: sonar-scanner.yml

@@ -1,0 +1,33 @@
+---
+    - name: Check Sonar-Scanner
+      shell: command -v sonar-scanner
+      register: check_scanner
+      ignore_errors: True
+      changed_when: False
+
+    - name: Downloading sonar scanner version
+      shell: 'wget -O {{ destination_dir }}{{ scanner_file_name }}.zip --no-check-certificate {{ scanner_download_url }}{{ scanner_file_name }}.zip'
+      when: check_scanner.rc > 0
+
+    - name: Untar sonar scanner
+      unarchive:
+        src: "{{ scanner_tar }}"
+        dest: "{{ destination_dir }}"
+        remote_src: yes
+
+    - name: Checking scanner untared dir, exists or not
+      stat:
+        path: "{{ destination_dir }}{{ scanner_unarchived }}"
+      register: bool_dir_exist
+
+    - name: Move folder sonar-scanner
+      command: 'mv {{ destination_dir }}{{ scanner_unarchived }}/ {{ scanner_dest_dir }}{{ scanner_filename }}/'
+      when: bool_dir_exist.stat.exists == True
+
+    - name: Adding scanner to $PATH
+      shell: "export PATH=$PATH:{{ scanner_bin }}"
+
+    - name: Removing sonar scanner setup file
+      file:
+        path: "{{ scanner_tar }}"
+        state: absent

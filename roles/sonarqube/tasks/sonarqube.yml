@@ -5,7 +5,7 @@
       register: bool_file_exist
 
     - name: Downloading sonarqube version
-      command: 'wget -O {{ destionation_dir }}{{ sonar_file_name }}.zip --no-check-certificate {{ sonar_download_url }}{{ sonar_file_name }}.zip'
+      command: 'wget -O {{ destination_dir }}{{ sonar_file_name }}.zip --no-check-certificate {{ sonar_download_url }}{{ sonar_file_name }}.zip'
       when: bool_file_exist.stat.exists == False
 
     - name: Checking sonarqube file, exists or not
@@ -16,34 +16,34 @@
     - name: Untar sonarqube
       unarchive:
         src: "{{ sonarqube_tar }}"
-        dest: "{{ destionation_dir }}"
+        dest: "{{ destination_dir }}"
         remote_src: yes
       when: bool_file_exist.stat.exists == True
 
     - name: Checking sonarqube untared dir, exists or not
       stat:
-        path: "{{ destionation_dir }}{{ sonar_file_name }}"
+        path: "{{ destination_dir }}{{ sonar_file_name }}"
       register: bool_dir_exist
 
     - name: Move folder sonar
       #Cannot use copy module as it does not support recursive copy when remote_src=yes.
-      command: 'mv {{ destionation_dir }}{{ sonar_file_name }}/ {{ destionation_dir }}{{ sonarqube_filename }}/'
+      command: 'mv {{ destination_dir }}{{ sonar_file_name }}/ {{ destination_dir }}{{ sonarqube_filename }}/'
       when: bool_dir_exist.stat.exists == True
 
     - name: Removing sonarqube old dir
       file:
-        path: "{{ destionation_dir }}{{ sonar_file_name }}"
+        path: "{{ destination_dir }}{{ sonar_file_name }}"
         state: absent
 
     - name: Creating group sonar
       command: 'groupadd {{ sonarqube_group }}'
 
     - name: Creating user sonar
-      command: 'useradd -c "Sonar System User" -d {{ destionation_dir }}{{ sonarqube_filename }}  -g {{ sonarqube_group }} -s /bin/bash {{ sonarqube_user }}'  
+      command: 'useradd -c "Sonar System User" -d {{ destination_dir }}{{ sonarqube_filename }}  -g {{ sonarqube_group }} -s /bin/bash {{ sonarqube_user }}'  
 
     - name: Changing ownership of sonar home folder
       file:
-        path: "{{ destionation_dir }}{{ sonarqube_filename }}"
+        path: "{{ destination_dir }}{{ sonarqube_filename }}"
         owner: "{{ sonarqube_user }}"
         group: "{{ sonarqube_group }}"
         recurse: yes
